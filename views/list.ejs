@@ -1,0 +1,18 @@
+<html>
+    <head> 
+        <title>Google Map List</title>
+		<link rel="stylesheet" type="text/css" href="layout.css">
+    </head>
+    <body>
+	 	<header><h1>The Open University of Hong Kong</h1></header>
+		<nav>Vistors<br>About Us<br></nav>
+		<section>
+			<h1>Node.JS Express EJS Example</h1>
+			<p>List</p>
+			<% for (var item in list)  { %>
+				  <a href='/showonmap?id=<%= list[item].id %>'><%=list[item].name%></a><br>
+				
+			<% } %>
+		</section>
+    </body>
+</html>

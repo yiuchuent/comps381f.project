@@ -1,0 +1,15 @@
+{
+    "name": "COMPS381f-project",
+    "description": "COMPS381F Project 2016",
+    "author": "Calvin TSUI <yiuchuent@gmail.com>, Vico LAI <vico19951515@gmail.com>",
+    "version": "0.0.1",
+    "dependencies": {
+        "mongoose": "*",
+        "express": "*",
+        "ejs": "*",
+	"mongodb": "*"
+    },
+    "engine": "node >= 0.10.0",
+    "scripts": {"start": "node server"}
+}
+
