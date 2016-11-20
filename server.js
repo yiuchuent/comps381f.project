@@ -11,6 +11,13 @@ app.set('view engine', 'ejs');
 
 app.use(express.static(__dirname +  '/public'));
 
+app.get("/login", function(req,res) {
+
+
+	res.render('index.ejs');
+	
+});
+
 app.get("/", function(req,res) {
 	var lat  = req.query.lat;
 	var lon  = req.query.lon;
@@ -65,3 +72,4 @@ function getAll(db, callback) {
 }
 
 app.listen(process.env.PORT || 8099);
+	
