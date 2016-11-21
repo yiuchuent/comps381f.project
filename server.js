@@ -1,29 +1,39 @@
-// http://101.78.220.133:8099/22.316109/114.180459
-// http://101.78.220.133:8099/?lat=22.316109&lon=114.180459&zoom=18
-
 var express = require('express');
+var session = require('express-session');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
 var mongourl = 'mongodb://localhost:27017/test';
 
+var SECRETKEY = 'This is secretkey for comps381f project';
 
 app.set('view engine', 'ejs');
+
+app.use(session({
+	secret: SECRETKEY,
+	resave: true,
+	saveUninitialized: true
+}));
 
 app.use(express.static(__dirname +  '/public'));
 
 app.get("/login", function(req,res) {
+	res.sendFile(__dirname + '/public/login.html');
+	//res.render('index.ejs');
+	
+});
 
-
-	res.render('index.ejs');
+app.get("/logout", function(req,res) {
+	req.session = null;
+	res.redirect('/');
 	
 });
 
 app.get("/", function(req,res) {
-	var lat  = req.query.lat;
-	var lon  = req.query.lon;
-	var zoom = req.query.zoom;
-
-	res.render("gmap.ejs",{lat:lat,lon:lon,zoom:zoom});
+	if (!req.session.auth) {
+		res.redirect('/login');
+	} else {
+		res.end('hello');
+	}
 	
 });
 

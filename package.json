@@ -7,7 +7,8 @@
         "mongoose": "*",
         "express": "*",
         "ejs": "*",
-	"mongodb": "*"
+	"mongodb": "*",
+	"express-session": "*"
     },
     "engine": "node >= 0.10.0",
     "scripts": {"start": "node server"}
