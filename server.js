@@ -2,7 +2,7 @@ var express = require('express');
 var session = require('cookie-session');
 var app = express();
 var MongoClient = require('mongodb').MongoClient;
-var mongourl = 'mongodb://localhost:27017/test';
+var mongourl = 'mongodb://proj:proj@ds159517.mlab.com:59517/proj';
 var qs = require('querystring');
 var SECRETKEY = 'This is secretkey for comps381f project';
 var bodyParser = require('body-parser');
@@ -12,6 +12,9 @@ var data = '';
 
 app.set('view engine', 'ejs');
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); 
+
 app.use(session({
 	secret: SECRETKEY,
 	resave: true,
@@ -19,11 +22,34 @@ app.use(session({
 }));
 
 app.use(express.static(__dirname +  '/public'));
-app.use(bodyParser.json());
+
+
+app.get("/login", function(req,res) {
+	res.render('login', {message: "Please Login"});
+});
+
+app.post("/login", function(req, res) {
+     MongoClient.connect(mongourl,function(err,db) {
+      console.log('Connected to db');
+
+     db.collection('users').findOne(req.body, function(err, result) {
+	if (result != null) {
+		req.session.auth = true;
+		req.session.userId = result.userId;
+		console.log(result.userId + ' is logged in');
+		res.redirect('/');
+	} else {
+		res.render('login', {message: "wrong password/user id not exist."});	
+	}
+     });
+    });
+});
+
 
 app.post("/register", function(req,res) {
 
-	console.log(req.body.userId);
+	console.log(req.body);
+	
       MongoClient.connect(mongourl,function(err,db) {
       console.log('Connected to db');
 
@@ -42,7 +68,7 @@ app.post("/register", function(req,res) {
 });
 
 function create(db,userId,password,email,callback) {
-  db.collection('test').insertOne({
+  db.collection('users').insertOne({
     "userId" : userId,
     "password" : password,
     "email" : email,
@@ -56,6 +82,7 @@ function create(db,userId,password,email,callback) {
     }
     callback(result);
   });
+
 }
 
 app.get("/logout", function(req,res) {
