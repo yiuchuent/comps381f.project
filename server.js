@@ -181,13 +181,14 @@ MongoClient.connect(mongourl,function(err,db) {
 
 app.get('/display', function(req,res){
 	var userId = req.session.userId;
+	var zoom = 18;
 	console.log(req.query._id);
 	MongoClient.connect(mongourl, function(err, db) {
 		db.collection('restaurants').findOne({"_id": ObjectId(req.query._id) }, function(err, doc) {
 			if (doc != null) {
 			//console.log('restaurant found: ' + JSON.stringify(doc));
 			db.close();
-			res.render("display", {restaurant: doc});
+			res.render("display", {restaurant: doc, zoom:zoom});
 			} else { res.end("Restaurant Not Found")}
 		});
 	});
