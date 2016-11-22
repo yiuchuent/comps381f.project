@@ -1,17 +1,19 @@
 var express = require('express');
 var session = require('cookie-session');
-var app = express();
+
 var MongoClient = require('mongodb').MongoClient;
 var mongourl = 'mongodb://proj:proj@ds159517.mlab.com:59517/proj';
 var qs = require('querystring');
 var SECRETKEY = 'This is secretkey for comps381f project';
 var bodyParser = require('body-parser');
+var fileUpload = require('express-fileupload');
+var app = express();
 
 
 var data = '';
 
 app.set('view engine', 'ejs');
-
+app.use(fileUpload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 
@@ -95,7 +97,8 @@ app.get("/", function(req,res) {
 	if (!req.session.auth) {
 		res.redirect('/login');
 	} else {
-		res.end('hello');
+		//res.end('hello');
+		res.render("homepage.ejs", { userId :req.session.userId} );
 	}
 	
 });
@@ -131,6 +134,51 @@ app.get('/list', function(req,res) {
 		});
 	});		
 });
+
+ app.post('/createRestaurant', function(req,res){
+MongoClient.connect(mongourl,function(err,db) {
+      console.log('Connected to db');
+      createRestaurant	(db,req.body.resName,req.body.resCuisine,req.body.resBuilding,req.body.resZipcode,
+req.body.resLon,req.body.resLat,req.files.resPhoto,
+	function(result) {
+          db.close();
+          if (result.insertedId != null) {
+            res.status(200);
+            res.end('Inserted: ' + result.insertedId);
+          } else {
+            res.status(500);
+            res.end(JSON.stringify(result));
+          }
+      });
+    });
+});
+
+function createRestaurant(db,resName,resCuisine,resStreet,resBuilding,resZipcode,resLon,resLat,resPhoto,callback) {
+  db.collection('Restaurant').insertOne({
+    "resName" : resName,
+    "resCuisine" : resCuisine,
+    "resStreet" : resStreet,
+    "resBuilding" : resBuilding,
+    "resZipcode" : resZipcode,
+    "resLon" : resLon,
+    "resLat" : resLat,
+    "data" : new Buffer(resPhoto.data).toString('base64'),
+    "mimetype" : resPhoto.mimetype,
+  }, function(err,result) {
+    //assert.equal(err,null);
+    if (err) {
+      result = err;
+      console.log("insertOne error: " + JSON.stringify(err));
+    } else {
+      console.log("Inserted _id = " + result.insertedId);
+    }
+    callback(result);
+  });
+
+}
+
+
+
 
 function getAll(db, callback) {
 	var list = [];

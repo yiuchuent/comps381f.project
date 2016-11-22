@@ -1,0 +1,74 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Restaurant</title>
+    <link rel="stylesheet" href="css/foundation.css">
+    <link rel="stylesheet" href="css/app.css">
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Create Restaurant</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-8 medium-8 columns">
+        <!-- Grid Example -->
+
+        <hr />
+
+        <h5>Enter the following information:</h5>
+        <form action="/createRestaurant" method="post" >
+          <div class="row">
+            <div class="large-12 columns">
+              <label>Name</label>
+              <input type="text" name="resName"placeholder="large-12.columns" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="large-12 columns">
+              <label>Cuisine</label>
+              <input type="text" name="resCuisine" placeholder="large-12.columns" />
+            </div>
+            <div class="large-12 columns">
+              <label>Street</label>
+              <input type="text" name="resStreet" placeholder="large-12.columns" />
+            </div>
+            <div class="large-12 columns">
+              <label>Building</label>
+              <input type="text" name="resBuilding" placeholder="large-12.columns" />
+            </div>
+            <div class="large-12 columns">
+              <label>Zipcode</label>
+              <input type="text" name="resZipcode" placeholder="large-12.columns" />
+            </div>
+			<div class="large-12 columns">
+              <label>GPS Coordinates (lon.)</label>
+              <input type="text" name="resLon" placeholder="large-12.columns" />
+            </div>
+			<div class="large-12 columns">
+              <label>GPS Coordinates (lat.)</label>
+              <input type="text" name="resLat" placeholder="large-12.columns" />
+            </div>
+			<div class="large-12 columns">
+              <label>Photo</label>
+              <input type="file" name="resPhoto" placeholder="large-12.columns" />
+            </div>
+          </div>
+			 <input type="submit" />
+        </form>
+      </div>
+
+
+    </div>
+
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/vendor/what-input.js"></script>
+    <script src="js/vendor/foundation.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

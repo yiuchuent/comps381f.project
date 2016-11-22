@@ -9,7 +9,8 @@
         "ejs": "*",
 	"mongodb": "*",
 	"cookie-session": "*",
-    "body-parser": "latest"
+        "body-parser": "latest",
+        "express-fileupload": "latest"
 
     },
     "engine": "node >= 0.10.0",
