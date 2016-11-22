@@ -18,37 +18,37 @@
     <div class="row">
       <div class="large-8 medium-8 columns">
         <h5>Restaurant Information:</h5>
-		<img src="" alt="Restaurant" style="width:304px;height:228px;">
+		<img src="data: <%=restaurant.mimetype%>;base64,<%=restaurant.data%>" alt="Restaurant" style="width:304px;height:228px;">
         <hr />
 
           <div class="row">
             <div class="large-12 columns">
-              <label>Borough: <%=borough%></label>
+              <label>Borough: <%=restaurant.borough%></label>
             </div>
           </div>
 		   <div class="row">
             <div class="large-12 columns">
-              <label>Cuisine: <%=cuisine%></label>
+              <label>Cuisine: <%=restaurant.cuisine%></label>
             </div>
           </div>
 		   <div class="row">
             <div class="large-12 columns">
-              <label>Street: <%=street%></label>
+              <label>Street: <%=restaurant.address.street%></label>
             </div>
           </div>
 		   <div class="row">
             <div class="large-12 columns">
-              <label>Building: <%=building%></label>
+              <label>Building: <%=restaurant.address.building%></label>
             </div>
           </div>
 		   <div class="row">
             <div class="large-12 columns">
-              <label>Zipcode: <%=zipcode%></label>
+              <label>Zipcode: <%=restaurant.address.zipcode%></label>
             </div>
           </div>
 		  <div class="row">
             <div class="large-12 columns">
-              <label>GPS: [<%=lat%>, <%=lon%> ]</label>
+              <label>GPS: [<%=restaurant.address.coord[0]%>, <%=restaurant.address.coord[1]%> ]</label>
             </div>
           </div>
 		   <div class="row">
@@ -58,7 +58,7 @@
           </div>
 		 <div class="row">
             <div class="large-12 columns">
-              <label>Created by: <%=userId%></label>
+              <label>Created by: <%=restaurant.userid%></label>
             </div>
           </div>
 	  	  <div class="row">

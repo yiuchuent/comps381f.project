@@ -1,5 +1,6 @@
 var express = require('express');
 var session = require('cookie-session');
+var ObjectId = require('mongodb').ObjectId;
 var url  = require('url');
 var MongoClient = require('mongodb').MongoClient;
 var mongourl = 'mongodb://proj:proj@ds159517.mlab.com:59517/proj';
@@ -182,18 +183,12 @@ app.get('/display', function(req,res){
 	var userId = req.session.userId;
 	console.log(req.query._id);
 	MongoClient.connect(mongourl, function(err, db) {
-		db.collection('restaurants').findOne({"_id": req.query._id }, function(err, doc) {
+		db.collection('restaurants').findOne({"_id": ObjectId(req.query._id) }, function(err, doc) {
+			if (doc != null) {
+			//console.log('restaurant found: ' + JSON.stringify(doc));
 			db.close();
-			borough = doc.borough;
-			cuisine = doc.cuisine;
-			street = doc.street;
-			building = doc.building;
-			zipcode = doc.zipcode;
-			lat = doc.coord[1];
-			lon = doc.coord[0];
-
-			res.render("display", {  borough :borough, cuisine : cuisine, street: street, building: building, zipcode: zipcode, lat: lat, lon : lon, userId: userId});
-			res.end();
+			res.render("display", {restaurant: doc});
+			} else { res.end("Restaurant Not Found")}
 		});
 	});
 
