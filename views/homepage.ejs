@@ -12,18 +12,20 @@
     <div class="row">
       <div class="large-12 columns">
         <h1>Welcome to Restaurant</h1>
-		<p>User:<%=userId%></p>
-		<p>Showing __ document </p>
+		<p>User: <%=userId%>  [<a href="/logout">logout</a>]</p>
+		<p>Showing <%=restList.length%> document </p>
       </div>
     </div>
 
     <div class="row">
       <div class="large-12 columns">
         <div class="callout">
-		  <p><a href="createRestaurant.html" class="button">NEW</a><br/>
+		  <p><a href="/new" class="button">NEW</a><br/>
           <div class="row">
             <ul style="list-style-type:none">
-			<li>Starbuck</li>
+		<% restList.forEach(function(restaurant) { %>
+			<li><a href="/display?_id=<%=restaurant._id%>"><%=restaurant.name%></a></li>
+		<% }); %>
 			</ul>
           </div>
 

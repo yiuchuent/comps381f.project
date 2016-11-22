@@ -22,44 +22,66 @@
         <hr />
 
         <h5>Enter the following information:</h5>
-        <form action="/createRestaurant" method="post" >
+<% if (message)  { %>
+	<div class="callout alert"><h5>Error </h5><p><%=message%></p></div>
+
+<% } %> 
+        <form action="/createRestaurant" method="post" encType="multipart/form-data">
           <div class="row">
             <div class="large-12 columns">
               <label>Name</label>
-              <input type="text" name="resName"placeholder="large-12.columns" />
+              <input type="text" name="name"placeholder="large-12.columns" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="large-12 columns">
+              <label>Borough</label>
+              <input type="text" name="borough" placeholder="large-12.columns" />
             </div>
           </div>
           <div class="row">
             <div class="large-12 columns">
               <label>Cuisine</label>
-              <input type="text" name="resCuisine" placeholder="large-12.columns" />
-            </div>
-            <div class="large-12 columns">
-              <label>Street</label>
-              <input type="text" name="resStreet" placeholder="large-12.columns" />
-            </div>
-            <div class="large-12 columns">
-              <label>Building</label>
-              <input type="text" name="resBuilding" placeholder="large-12.columns" />
-            </div>
-            <div class="large-12 columns">
-              <label>Zipcode</label>
-              <input type="text" name="resZipcode" placeholder="large-12.columns" />
-            </div>
-			<div class="large-12 columns">
-              <label>GPS Coordinates (lon.)</label>
-              <input type="text" name="resLon" placeholder="large-12.columns" />
-            </div>
-			<div class="large-12 columns">
-              <label>GPS Coordinates (lat.)</label>
-              <input type="text" name="resLat" placeholder="large-12.columns" />
-            </div>
-			<div class="large-12 columns">
-              <label>Photo</label>
-              <input type="file" name="resPhoto" placeholder="large-12.columns" />
+              <input type="text" name="cuisine" placeholder="large-12.columns" />
             </div>
           </div>
-			 <input type="submit" />
+          <div class="row">
+            <div class="large-12 columns">
+              <label>Street</label>
+              <input type="text" name="street" placeholder="large-12.columns" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="large-12 columns">
+              <label>Building</label>
+              <input type="text" name="building" placeholder="large-12.columns" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="large-12 columns">
+              <label>Zipcode</label>
+              <input type="text" name="zipcode" placeholder="large-12.columns" />
+            </div>
+          </div>
+          <div class="row">
+	    <div class="large-12 columns">
+              <label>GPS Coordinates (lon.)</label>
+              <input type="text" name="lon" placeholder="large-12.columns" />
+            </div>
+          </div>
+          <div class="row">
+			<div class="large-12 columns">
+              <label>GPS Coordinates (lat.)</label>
+              <input type="text" name="lat" placeholder="large-12.columns" />
+            </div>
+          </div>
+          <div class="row">
+			<div class="large-12 columns">
+              <label>Photo</label>
+              <input type="file" name="photo"/>
+            </div>
+          </div>
+			 <input type="submit" value="Create" />
         </form>
       </div>
 

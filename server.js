@@ -3,7 +3,7 @@ var session = require('cookie-session');
 
 var MongoClient = require('mongodb').MongoClient;
 var mongourl = 'mongodb://proj:proj@ds159517.mlab.com:59517/proj';
-var qs = require('querystring');
+//var qs = require('querystring');
 var SECRETKEY = 'This is secretkey for comps381f project';
 var bodyParser = require('body-parser');
 var fileUpload = require('express-fileupload');
@@ -15,7 +15,7 @@ var data = '';
 app.set('view engine', 'ejs');
 app.use(fileUpload());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); 
+//app.use(bodyParser.urlencoded({entended: true})); 
 
 app.use(session({
 	secret: SECRETKEY,
@@ -50,7 +50,7 @@ app.post("/login", function(req, res) {
 
 app.post("/register", function(req,res) {
 
-	console.log(req.body);
+      console.log(req.body);
 	
       MongoClient.connect(mongourl,function(err,db) {
       console.log('Connected to db');
@@ -97,9 +97,36 @@ app.get("/", function(req,res) {
 	if (!req.session.auth) {
 		res.redirect('/login');
 	} else {
-		//res.end('hello');
-		res.render("homepage.ejs", { userId :req.session.userId} );
+		res.redirect('/read');
+
 	}
+	
+});
+
+app.get("/read", function(req,res) {
+
+if (req.session.auth) {
+
+	MongoClient.connect(mongourl, function(err, db) {
+
+		getAll(db, function(list) {
+			db.close();
+			res.render("homepage", {userId :req.session.userId, restList: list} );
+		});
+	});
+
+} else {
+    res.redirect('/');
+}
+	
+});
+
+app.get("/new", function(req,res) {
+if (req.session.auth) {
+		res.render("createRestaurant", {message : ""} );
+} else {
+    res.redirect('/');
+}
 	
 });
 
@@ -124,27 +151,25 @@ app.get("/showonmap", function(req,res) {
 	});	
 });
 
-app.get('/list', function(req,res) {
-	MongoClient.connect(mongourl, function(err, db) {
+app.post('/createRestaurant', function(req,res){
 
-		getAll(db, function(list) {
-			db.close();
-			res.render('list', {list: list});
-			res.end();
-		});
-	});		
-});
-
- app.post('/createRestaurant', function(req,res){
 MongoClient.connect(mongourl,function(err,db) {
       console.log('Connected to db');
-      createRestaurant	(db,req.body.resName,req.body.resCuisine,req.body.resBuilding,req.body.resZipcode,
-req.body.resLon,req.body.resLat,req.files.resPhoto,
+      //console.log(req.files);
+      console.log('name: ' + req.body.name);
+      var userid = req.session.userId;
+
+      if (!req.body.name) {
+         console.log('empty name');
+	 res.render("createRestaurant", { message : "Please fill in name"} );
+         return;
+      }
+
+      createRestaurant(db,req.files.photo,req.body,userid,
 	function(result) {
           db.close();
           if (result.insertedId != null) {
-            res.status(200);
-            res.end('Inserted: ' + result.insertedId);
+	    res.redirect('/read');
           } else {
             res.status(500);
             res.end(JSON.stringify(result));
@@ -153,28 +178,28 @@ req.body.resLon,req.body.resLat,req.files.resPhoto,
     });
 });
 
-function createRestaurant(db,resName,resCuisine,resStreet,resBuilding,resZipcode,resLon,resLat,resPhoto,callback) {
-  db.collection('Restaurant').insertOne({
-    "resName" : resName,
-    "resCuisine" : resCuisine,
-    "resStreet" : resStreet,
-    "resBuilding" : resBuilding,
-    "resZipcode" : resZipcode,
-    "resLon" : resLon,
-    "resLat" : resLat,
-    "data" : new Buffer(resPhoto.data).toString('base64'),
-    "mimetype" : resPhoto.mimetype,
+function createRestaurant(db,bfile,query,userid,callback) {
+  console.log(bfile);
+  db.collection('restaurants').insertOne({
+    "address" : {"street": query.street, "zipcode": query.zipcode, "building": query.building, "coord": [query.lon, query.lat]},
+    "borough": query.borough,
+    "cuisine": query.cuisine,
+    "name": query.name,
+    "restaurant_id": null,
+    "userid": userid,
+    "grades": [],
+    "data" : new Buffer(bfile.data).toString('base64'),
+    "mimetype" : bfile.mimetype
   }, function(err,result) {
     //assert.equal(err,null);
     if (err) {
+      console.log('insertOne Error: ' + JSON.stringify(err));
       result = err;
-      console.log("insertOne error: " + JSON.stringify(err));
     } else {
       console.log("Inserted _id = " + result.insertedId);
     }
     callback(result);
   });
-
 }
 
 
@@ -182,7 +207,7 @@ function createRestaurant(db,resName,resCuisine,resStreet,resBuilding,resZipcode
 
 function getAll(db, callback) {
 	var list = [];
-	var cursor = db.collection('cafes').find();
+	var cursor = db.collection('restaurants').find({}, {data:0});
 	cursor.each(function(err, doc) {
 		if (doc != null) {
 			list.push(doc);
