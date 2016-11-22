@@ -1,6 +1,6 @@
 var express = require('express');
 var session = require('cookie-session');
-
+var url  = require('url');
 var MongoClient = require('mongodb').MongoClient;
 var mongourl = 'mongodb://proj:proj@ds159517.mlab.com:59517/proj';
 //var qs = require('querystring');
@@ -176,6 +176,27 @@ MongoClient.connect(mongourl,function(err,db) {
           }
       });
     });
+});
+
+app.get('/display', function(req,res){
+	var userId = req.session.userId;
+	console.log(req.query._id);
+	MongoClient.connect(mongourl, function(err, db) {
+		db.collection('restaurants').findOne({"_id": req.query._id }, function(err, doc) {
+			db.close();
+			borough = doc.borough;
+			cuisine = doc.cuisine;
+			street = doc.street;
+			building = doc.building;
+			zipcode = doc.zipcode;
+			lat = doc.coord[1];
+			lon = doc.coord[0];
+
+			res.render("display", {  borough :borough, cuisine : cuisine, street: street, building: building, zipcode: zipcode, lat: lat, lon : lon, userId: userId});
+			res.end();
+		});
+	});
+
 });
 
 function createRestaurant(db,bfile,query,userid,callback) {
