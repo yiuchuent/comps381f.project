@@ -198,14 +198,20 @@ app.get("/", function(req, res) {
 app.get("/read", function(req, res) {
 
     if(req.session.auth) {
+		var criteria = req.query;
 
+		if (!criteria.name) { delete criteria.name }
+		if (!criteria.borough) { delete criteria.borough }
+		if (!criteria.cuisine) { delete criteria.cuisine }
+		console.log('criteria: '+ JSON.stringify(criteria));
         MongoClient.connect(mongourl, function(err, db) {
 
-            getAll(db, function(list) {
+            getAll(db, criteria, function(list) {
                 db.close();
                 res.render("homepage", {
                     userId: req.session.userId,
-                    restList: list
+                    restList: list,
+					criteria: criteria
                 });
             });
         });
@@ -477,10 +483,10 @@ function updateRestaurant(db, bfile, query, updateId, userid, callback) {
 }
 
 
-function getAll(db, callback) {
+function getAll(db, criteria,callback) {
     var list = [];
     var cursor = db.collection('restaurants')
-        .find({}, {
+        .find(criteria, {
             data: 0
         });
     cursor.each(function(err, doc) {
