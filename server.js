@@ -136,14 +136,16 @@ var updateId;
 
 app.get('/update', function(req, res){
 	updateId = req.query._id;
+	
 	if (req.session.auth ) {
 		MongoClient.connect(mongourl, function(err, db) {
 		db.collection('restaurants').findOne({"_id": ObjectId(req.query._id) }, function(err, doc) {
-			if (doc != null) {
+			if (doc != null && (req.session.userId == doc.userid)) {
 			//console.log('restaurant found: ' + JSON.stringify(doc));
 			db.close();
 			res.render("update", { restaurant:doc, message : ""} );
-			} else { res.end("Restaurant Not Found")}
+			} else { 
+			res.end("Restaurant Not Found or you don't have the right")}
 		});
 	});
 
@@ -165,12 +167,7 @@ app.post('/updateSubmit', function(req, res){
       updateRestaurant(db,req.files.photo,req.body,updateId,userid,
 	function(result) {
           db.close();
-          if (result.insertedId != null) {
-	    res.redirect('/read');
-          } else {
-            res.status(500);
-            res.end(JSON.stringify(result));
-          }
+	  res.redirect('/read');
       });
     });
 });
@@ -235,15 +232,35 @@ app.get('/display', function(req,res){
 			if (doc != null) {
 			//console.log('restaurant found: ' + JSON.stringify(doc));
 			db.close();
-			console.log(doc.userId);
 			res.render("display", {restaurant: doc, zoom:zoom, userIdForUpdate:userIdForUpdate});
 			} else { res.end("Restaurant Not Found")}
 		});
 	});
-
 });
 
+app.get('/delete', function(req,res){
+	var deleteId = req.query._id;
+	MongoClient.connect(mongourl, function(err, db) {
+	db.collection('restaurants').findOne({'_id': ObjectId(deleteId)}, function(err, doc) {
+		if(req.session.userId == doc.userid){
+			removeRestaurant(db, deleteId ,function() {
+			db.close();
+			res.redirect('/');
+			});
+		} else{
+		res.end('you don not have the right');
+		}
+		});
+	});
+});
 
+function removeRestaurant(db, deleteId, callback){
+	deleteId = ObjectId(deleteId);
+	db.collection('restaurants').deleteOne( {"_id": deleteId}, function(err, results) {
+	console.log(results);
+	callback();
+	});
+}
 
 function createRestaurant(db,bfile,query,userid,callback) {
   console.log(bfile);
