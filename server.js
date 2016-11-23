@@ -73,7 +73,7 @@ app.post("/register", function(req, res) {
                 db.close();
                 if (result.insertedId != null) {
                     res.status(200);
-                    res.end('Inserted: ' + result.insertedId);
+                    res.redirect('/');
                 } else {
                     res.status(500);
                     res.end(JSON.stringify(result));
@@ -222,7 +222,7 @@ app.get('/update', function(req, res) {
                     //console.log('restaurant found: ' + JSON.stringify(doc));
                     db.close();
                     res.render("update", {
-                        restaurant: doc
+                        restaurant: doc, message: ""
                     });
                 } else {
                     res.render("error", {
@@ -240,6 +240,15 @@ app.get('/update', function(req, res) {
 app.post('/updateSubmit', function(req, res) {
     var userid = req.session.userId;
     console.log(updateId);
+
+	if (req.body.name == "" ) {
+        res.render("error", {
+            message: "Restaurant must have a name"
+        });	
+		return;	
+	}
+
+
     MongoClient.connect(mongourl, function(err, db) {
         console.log('Connected to db');
         //console.log(req.files);
@@ -424,13 +433,14 @@ function updateRestaurant(db, bfile, query, updateId, userid, callback) {
             "data": new Buffer(bfile.data).toString('base64'),
             "mimetype": bfile.mimetype
         }
-    }, function(err, result) {
+    }, function(err, count,result) {
         //assert.equal(err,null);
         if (err) {
             console.log('updateOne Error: ' + JSON.stringify(err));
             result = err;
         } else {
-            console.log("Update _id = " + result.updatedId);
+            console.log("Update _id = " + JSON.stringify(result));
+			console.log("Updated No. " + count);
         }
         callback(result);
     });
