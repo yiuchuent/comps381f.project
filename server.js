@@ -131,6 +131,52 @@ if (req.session.auth) {
 	
 });
 
+
+var updateId;
+
+app.get('/update', function(req, res){
+	updateId = req.query._id;
+	if (req.session.auth ) {
+		MongoClient.connect(mongourl, function(err, db) {
+		db.collection('restaurants').findOne({"_id": ObjectId(req.query._id) }, function(err, doc) {
+			if (doc != null) {
+			//console.log('restaurant found: ' + JSON.stringify(doc));
+			db.close();
+			res.render("update", { restaurant:doc, message : ""} );
+			} else { res.end("Restaurant Not Found")}
+		});
+	});
+
+} else {
+    res.redirect('/');
+}
+});
+
+app.post('/updateSubmit', function(req, res){
+      var userid = req.session.userId;
+	console.log(updateId);
+      MongoClient.connect(mongourl,function(err,db) {
+      console.log('Connected to db');
+      //console.log(req.files);
+      console.log('name: ' + req.body.name);
+      var userid = req.session.userId;
+
+
+      updateRestaurant(db,req.files.photo,req.body,updateId,userid,
+	function(result) {
+          db.close();
+          if (result.insertedId != null) {
+	    res.redirect('/read');
+          } else {
+            res.status(500);
+            res.end(JSON.stringify(result));
+          }
+      });
+    });
+});
+
+
+
 app.get("/showonmap", function(req,res) {
 	var id = req.query.id;
 
@@ -180,7 +226,8 @@ MongoClient.connect(mongourl,function(err,db) {
 });
 
 app.get('/display', function(req,res){
-	var userId = req.session.userId;
+	var userIdForUpdate = req.session.userId;
+	console.log(userIdForUpdate);
 	var zoom = 18;
 	console.log(req.query._id);
 	MongoClient.connect(mongourl, function(err, db) {
@@ -188,12 +235,15 @@ app.get('/display', function(req,res){
 			if (doc != null) {
 			//console.log('restaurant found: ' + JSON.stringify(doc));
 			db.close();
-			res.render("display", {restaurant: doc, zoom:zoom});
+			console.log(doc.userId);
+			res.render("display", {restaurant: doc, zoom:zoom, userIdForUpdate:userIdForUpdate});
 			} else { res.end("Restaurant Not Found")}
 		});
 	});
 
 });
+
+
 
 function createRestaurant(db,bfile,query,userid,callback) {
   console.log(bfile);
@@ -219,7 +269,30 @@ function createRestaurant(db,bfile,query,userid,callback) {
   });
 }
 
-
+function updateRestaurant(db,bfile,query,updateId,userid,callback) {
+  console.log(bfile);
+	console.log(updateId);
+  db.collection('restaurants').updateOne( {"_id": ObjectId(updateId)},{ $set: {
+    "address" : {"street": query.street, "zipcode": query.zipcode, "building": query.building, "coord": [query.lon, query.lat]},
+    "borough": query.borough,
+    "cuisine": query.cuisine,
+    "name": query.name,
+    "restaurant_id": null,
+    "userid": userid,
+    "grades": [],
+    "data" : new Buffer(bfile.data).toString('base64'),
+    "mimetype" : bfile.mimetype
+  }}, function(err,result) {
+    //assert.equal(err,null);
+    if (err) {
+      console.log('updateOne Error: ' + JSON.stringify(err));
+      result = err;
+    } else {
+      console.log("Update _id = " + result.updatedId);
+    }
+    callback(result);
+  });
+}
 
 
 function getAll(db, callback) {

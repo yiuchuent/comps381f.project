@@ -83,8 +83,8 @@
           </div>
 	  	  <div class="row">
             <div class="large-12 columns">
-			   <a href="#">Google Map</a>
-	<% if (!restaurant.address.coord === undefined) { %>	 
+
+	<% if (!(restaurant.address.coord == undefined)) { %>	 
 	<aside>
         	<div id="map" style="width:500px;height:500px;"/>
 	 </aside>
@@ -93,8 +93,10 @@
           </div>
 		  <div class="row">
                 <a href="#" class="button">Rate</a>
-                <a href="#" class="button">Edit</a>
-                <a href="#" class="button">Edit</a>
+	<% if (restaurant.userid == userIdForUpdate) { %>	 
+                <a href="/update?_id=<%=restaurant._id%>" class="button">Edit</a>
+	<% } %>
+                <a href="#" class="button">Delete</a>
 		<a href="#" class="button">Go Back</a>
           </div>
       </div>
