@@ -144,7 +144,7 @@ function checkRate(db, userid, id, callback) {
     var result;
     db.collection('restaurants')
         .findOne({
-            'grades.userid': userid
+            'grades.user': userid
         }, function(err, doc) {
             //console.log(JSON.stringify(doc));
             if(doc) {
