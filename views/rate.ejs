@@ -1,0 +1,51 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Restaurant</title>
+    <link rel="stylesheet" href="css/foundation.css">
+    <link rel="stylesheet" href="css/app.css">
+  </head>
+  <body>
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>Rate Restaurant</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="large-8 medium-8 columns">
+        <!-- Grid Example -->
+
+        <hr />
+
+        <h5>Enter the following information:</h5>
+<% if (message)  { %>
+	<div class="callout alert"><h5>Error </h5><p><%=message%></p></div>
+<% } %> 
+        <form action="/rate" method="post">
+          <div class="row">
+            <div class="large-12 columns">
+              <label>Rate (1-10)
+              <input type="text" name="score" placeholder="Rate" />
+	      </label>
+
+            </div>
+	<input type="hidden" name="_id" value="<%=_id%>"/>
+          </div>
+   
+	<input class="button" type="submit" value="Rate" />
+        </form>
+      </div>
+
+
+    </div>
+
+    <script src="js/vendor/jquery.js"></script>
+    <script src="js/vendor/what-input.js"></script>
+    <script src="js/vendor/foundation.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

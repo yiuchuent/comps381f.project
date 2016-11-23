@@ -1,89 +1,96 @@
 <!doctype html>
 <html class="no-js" lang="en" dir="ltr">
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Restaurant</title>
     <link rel="stylesheet" href="css/foundation.css">
     <link rel="stylesheet" href="css/app.css">
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="row">
-      <div class="large-12 columns">
-        <h1>Update Restaurant</h1>
-      </div>
+        <div class="large-12 columns">
+            <h1>Update Restaurant</h1>
+        </div>
     </div>
 
     <div class="row">
-      <div class="large-8 medium-8 columns">
-        <!-- Grid Example -->
+        <div class="large-8 medium-8 columns">
+            <!-- Grid Example -->
 
-        <hr />
+            <hr />
 
-        <h5>Enter the following information:</h5>
-<!--<% if (message)  { %>
-	<div class="callout alert"><h5>Error </h5><p><%=message%></p></div>
+            <h5>Enter the following information:</h5>
+            <% if (message)  { %>
+                <div class="callout alert">
+                    <h5>Error </h5>
+                    <p>
+                        <%=message%>
+                    </p>
+                </div>
 
-<% } %>  -->
-        <form action="/updateSubmit" method="post" encType="multipart/form-data">
-          <div class="row">
-            <div class="large-12 columns">
-              <label>Name: </label>
-              <input type="text" name="name"placeholder="<%=restaurant.name%>" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="large-12 columns">
-              <label>Borough: </label>
-              <input type="text" name="borough" placeholder="<%=restaurant.borough%>" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="large-12 columns">
-              <label>Cuisine:  </label>
-              <input type="text" name="cuisine" placeholder="<%=restaurant.cuisine%>" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="large-12 columns">
-              <label>Street: </label>
-              <input type="text" name="street" placeholder="<%=restaurant.address.street%>" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="large-12 columns">
-              <label>Building: </label>
-              <input type="text" name="building" placeholder="<%=restaurant.address.building%>" />
-            </div>
-          </div>
-          <div class="row">
-            <div class="large-12 columns">
-              <label>Zipcode: </label>
-              <input type="text" name="zipcode" placeholder="<%=restaurant.address.zipcode%>" />
-            </div>
-          </div>
-          <div class="row">
-	    <div class="large-12 columns">
-              <label>GPS Coordinates (lon.): </label>
-              <input type="text" name="lon" placeholder="<%=restaurant.address.coord[1]%>" />
-            </div>
-          </div>
-          <div class="row">
-			<div class="large-12 columns">
-              <label>GPS Coordinates (lat.): </label>
-              <input type="text" name="lat" placeholder="<%=restaurant.address.coord[0]%>)" />
-            </div>
-          </div>
-          <div class="row">
-			<div class="large-12 columns">
-              <label>Photo</label>
-              <input type="file" name="photo"/>
-            </div>
-          </div>
-			<input type="submit" value="updateSubmit" />
-        </form>
-      </div>
+                <% } %>
+                    <form action="/updateSubmit" method="post" encType="multipart/form-data">
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>Name: </label>
+                                <input type="text" name="name" value="<%=restaurant.name%>" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>Borough: </label>
+                                <input type="text" name="borough" value="<%=restaurant.borough%>" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>Cuisine:  </label>
+                                <input type="text" name="cuisine" value="<%=restaurant.cuisine%>" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>Street: </label>
+                                <input type="text" name="street" value="<%=restaurant.address.street%>" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>Building: </label>
+                                <input type="text" name="building" value="<%=restaurant.address.building%>" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>Zipcode: </label>
+                                <input type="text" name="zipcode" value="<%=restaurant.address.zipcode%>" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>GPS Coordinates (lon.): </label>
+                                <input type="text" name="lon" value="<%=restaurant.address.coord[1]%>" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>GPS Coordinates (lat.): </label>
+                                <input type="text" name="lat" value="<%=restaurant.address.coord[0]%>)" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>Photo</label>
+                                <input type="file" name="photo" />
+                            </div>
+                        </div>
+                        <input type="submit" value="updateSubmit" />
+                    </form>
+        </div>
 
 
     </div>
@@ -92,5 +99,6 @@
     <script src="js/vendor/what-input.js"></script>
     <script src="js/vendor/foundation.js"></script>
     <script src="js/app.js"></script>
-  </body>
+</body>
+
 </html>
