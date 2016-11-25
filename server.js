@@ -68,21 +68,28 @@ app.post("/login", function(req, res) {
 app.post("/register", function(req, res) {
 
     console.log(req.body);
-
+	req.session = null;
     MongoClient.connect(mongourl, function(err, db) {
         console.log('Connected to db');
+		checkDuplicate(db, req.body.userId, function(result) {
+			if (!result) {
+				create(db, req.body.userId, req.body.password, req.body.email,
+				    function(result) {
+				        db.close();
+				        if(result.insertedId != null) {
+				            res.status(200);
+				            res.redirect('/');
+				        } else {
+				            res.status(500);
+				            res.end(JSON.stringify(result));
+				        }
+				    });
+			} else {
+				res.render('error', {message: "User name duplicate"});
+			}
 
-        create(db, req.body.userId, req.body.password, req.body.email,
-            function(result) {
-                db.close();
-                if(result.insertedId != null) {
-                    res.status(200);
-                    res.redirect('/');
-                } else {
-                    res.status(500);
-                    res.end(JSON.stringify(result));
-                }
-            });
+		});
+
     });
 });
 
@@ -403,6 +410,26 @@ app.get('/delete', function(req, res) {
     });
 });
 
+app.get('/api/read/:r/:restName', function(req, res) {
+	var restName = req.params.restName;
+	var r = req.params.r;
+	var criteria = {};
+	criteria[r] = restName;
+	console.log('API Read: '+ JSON.stringify(criteria));
+	if (req.session.auth) {
+		MongoClient.connect(mongourl, function(err, db) {
+			getAll(db, criteria, function (restaurants) {
+				db.close();
+				res.end(JSON.stringify(restaurants));
+			}); 
+		});
+	} else {
+		res.redirect('/');
+	}
+	
+});
+
+
 function removeRestaurant(db, deleteId, callback) {
     deleteId = ObjectId(deleteId);
     db.collection('restaurants')
@@ -496,6 +523,17 @@ function getAll(db, criteria,callback) {
             callback(list);
         }
     });
+}
+
+function checkDuplicate(db, userId, callback) {
+	db.collection('users').findOne({userId: userId}, function(err, doc) {
+		console.log(JSON.stringify('user duplicate: '+ doc));
+		if (doc) {
+			callback(true);
+		} else {
+			callback(false);
+		}
+	});
 }
 
 app.listen(process.env.PORT || 8099);
