@@ -429,6 +429,10 @@ app.get('/api/read/:r/:restName', function(req, res) {
 	
 });
 
+app.post('/api/create', function(req, res) {
+	res.redirect('/');
+	
+});
 
 function removeRestaurant(db, deleteId, callback) {
     deleteId = ObjectId(deleteId);
