@@ -36,12 +36,23 @@ app.get("/login", function(req, res) {
 });
 
 app.get("/rate", function(req, res) {
+	
+    if(req.session.auth) {
+		
+		var _id = req.query._id;
+		if (_id) {
+			res.render('rate', {
+				_id: _id,
+				message: ""
+			});
+		} else {
+			res.render('error', { message: "_id is not specified."});
+		}
 
-    var _id = req.query._id;
-    res.render('rate', {
-        _id: _id,
-        message: ""
-    });
+	} else {
+		res.redirect('/');
+		console.log('Unauthorized Request: ' + '/rate');
+	}
 });
 
 app.post("/login", function(req, res) {
@@ -149,8 +160,10 @@ function rateRestaurant(db, userid, score, id, callback) {
 
 function checkRate(db, userid, id, callback) {
     var result;
+	console.log('checkRate: _id= '+ id );
     db.collection('restaurants')
         .findOne({
+			'_id': ObjectId(id),
             'grades.user': userid
         }, function(err, doc) {
             //console.log(JSON.stringify(doc));
@@ -159,7 +172,7 @@ function checkRate(db, userid, id, callback) {
                 result = true;
                 callback(result);
             } else {
-                console.log('no rate before');
+                console.log('no rate before in _id: ' + id);
                 result = false;
                 callback(result);
             }
@@ -359,55 +372,65 @@ app.post('/createRestaurant', function(req, res) {
 });
 
 app.get('/display', function(req, res) {
-    var userIdForUpdate = req.session.userId;
-    console.log(userIdForUpdate);
-    var zoom = 18;
-    console.log(req.query._id);
-    MongoClient.connect(mongourl, function(err, db) {
-        db.collection('restaurants')
-            .findOne({
-                "_id": ObjectId(req.query._id)
-            }, function(err, doc) {
-                if(doc != null) {
-                    //console.log('restaurant found: ' + JSON.stringify(doc));
-                    db.close();
-                    res.render("display", {
-                        restaurant: doc,
-                        zoom: zoom,
-                        userIdForUpdate: userIdForUpdate
-                    });
-                } else {
-                    res.render('error', "Restaurant Not Found")
-                }
-            });
-    });
+	
+    if(req.session.auth) {
+		var userIdForUpdate = req.session.userId;
+		console.log(userIdForUpdate);
+		var zoom = 18;
+		console.log(req.query._id);
+		MongoClient.connect(mongourl, function(err, db) {
+			db.collection('restaurants')
+				.findOne({
+					"_id": ObjectId(req.query._id)
+				}, function(err, doc) {
+					if(doc != null) {
+						//console.log('restaurant found: ' + JSON.stringify(doc));
+						db.close();
+						res.render("display", {
+							restaurant: doc,
+							zoom: zoom,
+							userIdForUpdate: userIdForUpdate
+						});
+					} else {
+						res.render('error', "Restaurant Not Found")
+					}
+				});
+		});
+	} else {
+		res.redirect('/');
+		console.log('Unauthorized Request: ' + '/display');
+	}
 });
 
 app.get('/delete', function(req, res) {
-    var deleteId = req.query._id;
-    MongoClient.connect(mongourl, function(err, db) {
-        db.collection('restaurants')
-            .findOne({
-                '_id': ObjectId(deleteId)
-            }, function(err, doc) {
-                if(doc) {
-                    if(req.session.userId == doc.userid) {
-                        removeRestaurant(db, deleteId, function() {
-                            db.close();
-                            res.redirect('/');
-                        });
-                    } else {
-                        res.render('error', {
-                            message: "you don't have the right"
-                        });
-                    }
-                } else {
-                    res.render('error', {
-                        message: "Restaurant Not Exist."
-                    });
-                }
-            });
-    });
+	if (req.session.auth) {	
+		var deleteId = req.query._id;
+		MongoClient.connect(mongourl, function(err, db) {
+			db.collection('restaurants')
+				.findOne({
+					'_id': ObjectId(deleteId)
+				}, function(err, doc) {
+					if(doc) {
+						if(req.session.userId == doc.userid) {
+							removeRestaurant(db, deleteId, function() {
+								db.close();
+								res.redirect('/');
+							});
+						} else {
+							res.render('error', {
+								message: "you don't have the right"
+							});
+						}
+					} else {
+						res.render('error', {
+							message: "Restaurant Not Exist."
+						});
+					}
+				});
+		});
+	} else {
+		res.redirect('/');
+	}
 });
 
 app.get('/api/read/:r/:restName', function(req, res) {
@@ -430,8 +453,37 @@ app.get('/api/read/:r/:restName', function(req, res) {
 });
 
 app.post('/api/create', function(req, res) {
-	res.redirect('/');
-	
+	var status = {};
+	if (req.session.auth) {	
+		MongoClient.connect(mongourl, function(err, db) {
+			console.log('Connected to db');
+			console.log('req.body: ' + JSON.stringify(req.body));
+			console.log('name: ' + req.body.name);
+			var userid = req.session.userId;
+
+			if(!req.body.name) {
+				console.log('empty name');
+				status['status'] = 'failed';
+				res.end(JSON.stringify(status));
+				return;
+			}
+
+			createRestaurant(db, req.files.photo, req.body, userid,
+				function(result) {
+					db.close();
+					if(result.insertedId != null) {						
+						status['status'] = 'ok';
+						status['_id'] = result.insertedId;
+						res.end(JSON.stringify(status));
+					} else {
+						status['status'] = 'failed';
+						res.end(JSON.stringify(status));
+					}
+				});
+		});
+	} else {
+		res.redirect('/');
+	}
 });
 
 function removeRestaurant(db, deleteId, callback) {
