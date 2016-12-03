@@ -2,8 +2,6 @@ var express = require('express');
 var session = require('cookie-session');
 var ObjectId = require('mongodb')
     .ObjectId;
-//testing
-//testing233
 var url = require('url');
 var MongoClient = require('mongodb')
     .MongoClient;
