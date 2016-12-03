@@ -443,7 +443,7 @@ app.get('/api/read/:r/:restName', function(req, res) {
 		MongoClient.connect(mongourl, function(err, db) {
 			getAll(db, criteria, function (restaurants) {
 				db.close();
-				res.end(JSON.stringify(restaurants));
+				res.json(restaurants);
 			}); 
 		});
 	} else {
@@ -464,20 +464,20 @@ app.post('/api/create', function(req, res) {
 			if(!req.body.name) {
 				console.log('empty name');
 				status['status'] = 'failed';
-				res.end(JSON.stringify(status));
+				res.json(status);
 				return;
 			}
 
 			createRestaurant(db, req.files.photo, req.body, userid,
 				function(result) {
 					db.close();
-					if(result.insertedId != null) {						
+					if(result.insertedId) {						
 						status['status'] = 'ok';
 						status['_id'] = result.insertedId;
-						res.end(JSON.stringify(status));
+						res.json(status);
 					} else {
 						status['status'] = 'failed';
-						res.end(JSON.stringify(status));
+						res.json(status);
 					}
 				});
 		});
