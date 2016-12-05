@@ -308,6 +308,16 @@ app.post('/updateSubmit', function (req, res) {
             return;
         }
 
+			if (req.files) {
+				if (req.files.photo.name) {
+				console.log("Photos: " + JSON.stringify(req.files.photo));
+				if (req.files.photo.mimetype != 'image/jpeg' && req.files.photo.mimetype != 'image/png'&& req.files.photo.mimetype != 'image/gif') {
+					res.render('error', {message: "File uploaded is not an image"});
+					return;
+				}
+				}
+			}
+
 
         MongoClient.connect(mongourl, function (err, db) {
             console.log('Connected to db');
@@ -374,6 +384,16 @@ app.post('/createRestaurant', function (req, res) {
                 });
                 return;
             }
+
+			if (req.files) {
+				if (req.files.photo.name) {
+				console.log("Photos: " + JSON.stringify(req.files.photo));
+				if (req.files.photo.mimetype != 'image/jpeg' && req.files.photo.mimetype != 'image/png'&& req.files.photo.mimetype != 'image/gif') {
+					res.render('error', {message: "File uploaded is not an image"});
+					return;
+				}
+				}
+			}
 
             createRestaurant(db, req.files.photo, req.body, userid,
                     function (result) {
@@ -459,27 +479,25 @@ app.get('/api/read/:r/:restName', function (req, res) {
     var criteria = {};
     criteria[r] = restName;
     console.log('API Read: ' + JSON.stringify(criteria));
-    if (req.session.auth) {
+
         MongoClient.connect(mongourl, function (err, db) {
             getAll(db, criteria, function (restaurants) {
                 db.close();
                 res.json(restaurants);
             });
         });
-    } else {
-        res.redirect('/');
-    }
+
 
 });
 
 app.post('/api/create', function (req, res) {
     var status = {};
-    if (req.session.auth) {
+
         MongoClient.connect(mongourl, function (err, db) {
             console.log('Connected to db');
             console.log('req.body: ' + JSON.stringify(req.body));
             console.log('name: ' + req.body.name);
-            var userid = req.session.userId;
+            var userid = req.body.userId;
 
             if (!req.body.name) {
                 console.log('empty name');
@@ -501,9 +519,6 @@ app.post('/api/create', function (req, res) {
                         }
                     });
         });
-    } else {
-        res.redirect('/');
-    }
 });
 
 function removeRestaurant(db, deleteId, callback) {
@@ -604,7 +619,6 @@ function updateRestaurant(db, bfile, query, updateId, userid, callback) {
                     "name": query.name,
                     "restaurant_id": null,
                     "userid": userid,
-                    "grades": [],
                     "data": new Buffer(bfile.data)
                             .toString('base64'),
                     "mimetype": bfile.mimetype
